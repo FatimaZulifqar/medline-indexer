@@ -16,6 +16,8 @@ import java.util.zip.GZIPInputStream;
 
 public class MedlineCitationSetReader implements Iterator<MedlineCitation> {
 
+  private static final String PUBMED_ARTICLE_ELEMENT = "PubmedArticle";
+  
   private static final String MEDLINE_CITATION_ELEMENT = "MedlineCitation";
 
   private static final String PMID_ELEMENT = "PMID";
@@ -44,13 +46,13 @@ public class MedlineCitationSetReader implements Iterator<MedlineCitation> {
     }
     Document document = builder.build(inputStream);
     Element rootNode = document.getRootElement();
-    citations = rootNode.getChildren(MEDLINE_CITATION_ELEMENT);
+    citations = rootNode.getChildren(PUBMED_ARTICLE_ELEMENT);
   }
 
   public MedlineCitationSetReader(InputStream inputStream) throws JDOMException, IOException {
     Document document = builder.build(inputStream);
     Element rootNode = document.getRootElement();
-    citations = rootNode.getChildren(MEDLINE_CITATION_ELEMENT);
+    citations = rootNode.getChildren(PUBMED_ARTICLE_ELEMENT);
   }
 
   private int idx = 0;
@@ -62,7 +64,8 @@ public class MedlineCitationSetReader implements Iterator<MedlineCitation> {
 
   @Override
   public MedlineCitation next() {
-    Element citationElement = citations.get(idx++);
+	  
+    Element citationElement = citations.get(idx++).getChild(MEDLINE_CITATION_ELEMENT);
     // pmid
     int pmid = Integer.parseInt(citationElement.getChildText(PMID_ELEMENT));
     Element articleElement = citationElement.getChild(ARTICLE_ELEMENT);
